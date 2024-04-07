@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Run Laravel Pint
+# This script will run Laravel Pint on newly staged PHP Files.
+
+files=$(git diff --cached --name-only --diff-filter=AMCR | grep "\.php$")
+if echo "$files" | grep --quiet "\.php$"; then
+	echo "Running Laravel Pint..."
+	if [ ! "$(docker ps -aq -f status=exited -f name=php)" ]; then
+		echo "On Docker"
+		echo "Run Pint..."
+		docker exec php /var/www/html/vendor/bin/pint $files && git add $files
+		
+		echo "Run Insights..."
+		docker exec php php artisan insights
+	else
+		echo "On local"
+		echo "Run Pint..."
+		./vendor/bin/pint $files && git add $files
+		
+		echo "Run Insights..."
+		docker exec php php artisan insights
+	fi
+fi
