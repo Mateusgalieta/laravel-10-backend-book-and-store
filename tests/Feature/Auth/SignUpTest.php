@@ -1,9 +1,10 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Support\Str;
+use Tests\Feature\BaseFeatureTestCase;
 
 class SignUpTest extends BaseFeatureTestCase
 {

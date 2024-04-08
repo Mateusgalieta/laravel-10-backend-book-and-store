@@ -4,7 +4,7 @@ namespace App\Domain\Book;
 
 use App\Models\Book;
 
-interface Create
+interface CreateBook
 {
     public function handle(): Book;
 }

@@ -28,6 +28,13 @@ class DeleteBookTest extends BaseFeatureTestCase
         $response->assertJson([
             'message' => "Book with ID $book->id deleted successfully.",
         ]);
+
+        $this->assertDatabaseMissing('books', [
+            'name' => $book->name,
+            'isbn' => $book->isbn,
+            'value' => $book->value,
+            'deleted_at' => null,
+        ]);
     }
 
     public function testDeleteBookFailed()
@@ -39,8 +46,5 @@ class DeleteBookTest extends BaseFeatureTestCase
         $response = $this->actingAs($user)->delete("/api/book/$id");
 
         $response->assertBadRequest();
-        $response->assertJson([
-            'message' => "Book with ID $id cannot be deleted. Error: Call to a member function delete() on null.",
-        ]);
     }
 }

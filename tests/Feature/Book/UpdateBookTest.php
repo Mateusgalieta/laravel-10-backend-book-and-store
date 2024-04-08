@@ -37,6 +37,14 @@ class UpdateBookTest extends BaseFeatureTestCase
         $this->assertEquals($payload['name'], $data['name']);
         $this->assertEquals($payload['isbn'], $data['isbn']);
         $this->assertEquals($payload['value'], $data['value']);
+
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'name' => $payload['name'],
+            'isbn' => $payload['isbn'],
+            'value' => $payload['value'],
+            'deleted_at' => null,
+        ]);
     }
 
     public function testReturnErrorUpdateBookNameWhenInvalidFormat()

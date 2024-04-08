@@ -1,34 +1,34 @@
 <?php
 
-namespace App\UseCase\Book;
+namespace App\UseCase\Store;
 
-use App\Domain\Book\CreateBook as CreateBookDomain;
-use App\Models\Book;
-use App\Repositories\BookRepository;
+use App\Domain\Store\CreateStore as CreateStoreDomain;
+use App\Models\Store;
+use App\Repositories\StoreRepository;
 use App\UseCase\BaseUseCase;
-use App\UseCase\DTO\Book\CreateBookDTO;
+use App\UseCase\DTO\Store\CreateStoreDTO;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
 use Throwable;
 
-class CreateBook extends BaseUseCase implements CreateBookDomain
+class CreateStore extends BaseUseCase implements CreateStoreDomain
 {
     /**
-     * DTO to create Book
+     * DTO to create Store
      */
-    protected CreateBookDTO $params;
+    protected CreateStoreDTO $params;
 
     public function __construct(
-        CreateBookDTO $params,
+        CreateStoreDTO $params,
     ) {
         $this->params = $params;
     }
 
-    public function handle(): Book
+    public function handle(): Store
     {
         try {
             return $this->instance(
-                BookRepository::class,
+                StoreRepository::class,
             )->create($this->params->toArray());
         } catch (Throwable $th) {
             throw new HttpResponseException(

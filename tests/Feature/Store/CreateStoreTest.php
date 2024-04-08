@@ -1,51 +1,52 @@
 <?php
 
-namespace Tests\Feature\Book;
+namespace Tests\Feature\Store;
 
 use App\Models\User;
 use Tests\Feature\BaseFeatureTestCase;
 
-class CreateBookTest extends BaseFeatureTestCase
+class CreateStoreTest extends BaseFeatureTestCase
 {
-    public function testCreateBookSuccessfully()
+    public function testCreateStoreSuccessfully()
     {
         $user = User::factory()->create();
 
         $payload = [
             'name' => fake()->name(),
-            'isbn' => fake()->randomDigitNotNull(),
-            'value' => 15.15,
+            'address' => fake()->name(),
+            'active' => true,
         ];
 
-        $response = $this->actingAs($user)->postJson('/api/book', $payload);
+        $response = $this->actingAs($user)->postJson('/api/store', $payload);
 
         $response->assertSuccessful();
         $response->assertCreated();
         $response->assertJsonStructure([
             'id',
             'name',
-            'isbn',
-            'value',
+            'address',
+            'active',
             'created_at',
             'updated_at',
         ]);
 
-        $this->assertDatabaseHas('books', [
+        $this->assertDatabaseHas('stores', [
             'name' => $payload['name'],
-            'isbn' => $payload['isbn'],
-            'value' => $payload['value'],
+            'address' => $payload['address'],
+            'active' => $payload['active'],
+            'deleted_at' => null,
         ]);
     }
 
-    public function testReturnErrorCreateBookWhenUnauthorized()
+    public function testReturnErrorCreateStoreWhenUnauthorized()
     {
         $payload = [
             'name' => fake()->name(),
-            'isbn' => fake()->randomDigitNotNull(),
-            'value' => 15.15,
+            'address' => fake()->name(),
+            'active' => true,
         ];
 
-        $response = $this->postJson('/api/book', $payload);
+        $response = $this->postJson('/api/store', $payload);
 
         $response->assertUnauthorized();
     }
@@ -55,11 +56,11 @@ class CreateBookTest extends BaseFeatureTestCase
         $user = User::factory()->create();
 
         $payload = [
-            'isbn' => fake()->randomDigitNotNull(),
-            'value' => 15.15,
+            'address' => fake()->randomDigitNotNull(),
+            'active' => true,
         ];
 
-        $response = $this->actingAs($user)->postJson('/api/book', $payload);
+        $response = $this->actingAs($user)->postJson('/api/store', $payload);
 
         $response->assertUnprocessable();
         $response->assertJson([
@@ -77,11 +78,11 @@ class CreateBookTest extends BaseFeatureTestCase
 
         $payload = [
             'name' => true,
-            'isbn' => fake()->randomDigitNotNull(),
-            'value' => 15.15,
+            'address' => fake()->name(),
+            'active' => true,
         ];
 
-        $response = $this->actingAs($user)->postJson('/api/book', $payload);
+        $response = $this->actingAs($user)->postJson('/api/store', $payload);
 
         $response->assertUnprocessable();
         $response->assertJson([
@@ -93,87 +94,87 @@ class CreateBookTest extends BaseFeatureTestCase
         ]);
     }
 
-    public function testReturnErroWhenIsbnNotSent()
+    public function testReturnErroWhenAddressNotSent()
     {
         $user = User::factory()->create();
 
         $payload = [
             'name' => fake()->name(),
-            'value' => 15.15,
+            'active' => true,
         ];
 
-        $response = $this->actingAs($user)->postJson('/api/book', $payload);
+        $response = $this->actingAs($user)->postJson('/api/store', $payload);
 
         $response->assertUnprocessable();
         $response->assertJson([
             'errors' => [
-                'isbn' => [
-                    'The isbn field is required.',
+                'address' => [
+                    'The address field is required.',
                 ],
             ],
         ]);
     }
 
-    public function testReturnErroWhenIsbnInvalid()
+    public function testReturnErroWhenAddressInvalid()
     {
         $user = User::factory()->create();
 
         $payload = [
             'name' => fake()->name(),
-            'isbn' => false,
-            'value' => 15.15,
+            'address' => false,
+            'active' => true,
         ];
 
-        $response = $this->actingAs($user)->postJson('/api/book', $payload);
+        $response = $this->actingAs($user)->postJson('/api/store', $payload);
 
         $response->assertUnprocessable();
         $response->assertJson([
             'errors' => [
-                'isbn' => [
-                    'The isbn field must be an integer.',
+                'address' => [
+                    'The address field must be a string.',
                 ],
             ],
         ]);
     }
 
-    public function testReturnErroWhenValueNotSent()
+    public function testReturnErroWhenActiveNotSent()
     {
         $user = User::factory()->create();
 
         $payload = [
             'name' => fake()->name(),
-            'isbn' => fake()->randomDigitNotNull(),
+            'address' => fake()->name(),
         ];
 
-        $response = $this->actingAs($user)->postJson('/api/book', $payload);
+        $response = $this->actingAs($user)->postJson('/api/store', $payload);
 
         $response->assertUnprocessable();
         $response->assertJson([
             'errors' => [
-                'value' => [
-                    'The value field is required.',
+                'active' => [
+                    'The active field is required.',
                 ],
             ],
         ]);
     }
 
-    public function testReturnErroWhenValueInvalid()
+    public function testReturnErroWhenActiveInvalid()
     {
         $user = User::factory()->create();
 
         $payload = [
             'name' => fake()->name(),
-            'isbn' => fake()->randomDigitNotNull(),
-            'value' => true,
+            'address' => fake()->name(),
+            'active' => fake()->name(),
         ];
 
-        $response = $this->actingAs($user)->postJson('/api/book', $payload);
+        $response = $this->actingAs($user)->postJson('/api/store', $payload);
 
         $response->assertUnprocessable();
         $response->assertJson([
             'errors' => [
-                'value' => [
-                    'The value field must be a number.',
+                'active' => [
+                    'The active field must be true or false.',
                 ],
             ],
         ]);
